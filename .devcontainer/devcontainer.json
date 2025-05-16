@@ -1,0 +1,33 @@
+{
+  "name": "ViCnake C (ncurses) Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  // Einstellungen für VS Code innerhalb des Containers
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "/bin/bash"
+        }
+    },
+    // C/C++ spezifische Einstellungen
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.cppStandard": "c++17",
+    "editor.formatOnSave": true,
+    "[c]": {
+      "editor.defaultFormatter": "ms-vscode.cpptools",
+      "editor.wordBasedSuggestions": false 
+    }
+  },
+
+  "extensions": [
+    "ms-vscode.cpptools-extension-pack",
+    "ms-vscode.makefile-tools",          
+    "eamodio.gitlens",                  
+    "streetsidesoftware.code-spell-checker",
+    "ms-vscode.remote- Ευχαριστώcontainers"        
+  ],
+  "workspaceFolder": "/workspace",
+}
