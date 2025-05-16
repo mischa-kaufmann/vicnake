@@ -1,33 +1,46 @@
 {
+  // Name of the development container configuration
   "name": "ViCnake C (ncurses) Dev Environment",
+  // Docker build configuration
   "build": {
     "dockerfile": "Dockerfile"
+    // "args": {} // No build arguments passed from here in this setup
   },
-  // Einstellungen für VS Code innerhalb des Containers
+  // VS Code specific settings to apply inside the container
   "settings": {
+    // Set bash as the default integrated terminal profile on Linux
     "terminal.integrated.defaultProfile.linux": "bash",
     "terminal.integrated.profiles.linux": {
-        "bash": {
-            "path": "/bin/bash"
-        }
+      "bash": {
+        "path": "/bin/bash" // Explicitly define path to bash
+      }
     },
-    // C/C++ spezifische Einstellungen
-    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
-    "C_Cpp.default.cStandard": "c11",
-    "C_Cpp.default.cppStandard": "c++17",
-    "editor.formatOnSave": true,
+    // C/C++ extension specific settings
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc", // Path to the GCC compiler
+    "C_Cpp.default.cStandard": "c11", // Set default C standard
+    // "C_Cpp.default.cppStandard": "c++17", // Not needed for a pure C project
+    "editor.formatOnSave": true, // Automatically format code on save
+    // Language-specific settings for C files
     "[c]": {
-      "editor.defaultFormatter": "ms-vscode.cpptools",
-      "editor.wordBasedSuggestions": false 
+      "editor.defaultFormatter": "ms-vscode.cpptools", // Use C/C++ extension for formatting
+      "editor.wordBasedSuggestions": false // Or "off" - controls word-based suggestions
     }
   },
-
+  // List of VS Code extensions to install and enable in the dev container
   "extensions": [
-    "ms-vscode.cpptools-extension-pack",
-    "ms-vscode.makefile-tools",          
-    "eamodio.gitlens",                  
-    "streetsidesoftware.code-spell-checker",
-    "ms-vscode.remote- Ευχαριστώcontainers"        
+    "ms-vscode.cpptools-extension-pack", // Core C/C++ language support, debugging, etc.
+    "ms-vscode.makefile-tools", // Support for Makefiles (build, debug targets)
+    "eamodio.gitlens", // Enhanced Git capabilities within VS Code
+    "streetsidesoftware.code-spell-checker", // Spell checker for comments and strings
+    "ms-vscode.remote-containers" // Essential for dev container functionality
+    // Optional: "GitHub.copilot" // If you use GitHub Copilot
   ],
-  "workspaceFolder": "/workspace",
+  // The user that VS Code and its server will run as inside the container.
+  // This should match the USERNAME created in your Dockerfile.
+  "remoteUser": "devuser",
+  // The path to the workspace folder inside the container.
+  "workspaceFolder": "/workspace"
+  // "forwardPorts": [], // Not needed for this CLI application
+  // "postCreateCommand": "", // No commands needed after container creation for this setup
+  // "workspaceMount": "..." // Using default workspace mount behavior
 }
