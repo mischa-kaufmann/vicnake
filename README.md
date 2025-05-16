@@ -76,6 +76,7 @@ This project started as a "Minimal Minimal Viable Product" (MMVP) to get the abs
 ```bash
 ./vicnake
 
+```
 
 ## License
 
