@@ -1,50 +1,48 @@
 FROM debian:bookworm-slim
 
-# Argumente für den Benutzer (können beim Build angepasst werden, wenn nötig)
+# Arguments for user creation. These can be overridden at build time if needed.
 ARG USERNAME=devuser
 ARG USER_UID=1000
 ARG USER_GID=${USER_UID}
 
-# Umgebungsvariablen setzen, um interaktive Abfragen während der Installation zu vermeiden
+# Set DEBIAN_FRONTEND to noninteractive to prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# System aktualisieren und notwendige Pakete installieren
-# build-essential: Enthält gcc, g++, make etc.
-# gdb: Der GNU Debugger
-# libncurses-dev: Entwicklungsdateien für ncurses (Header, Bibliotheken)
-# git: Versionskontrolle
-# sudo: Damit der Benutzer im Container bei Bedarf Root-Rechte erlangen kann
-# man-db: Für den Zugriff auf Manpages (sehr nützlich)
+# Update package lists and install essential packages for C development and general use
+# --no-install-recommends reduces the number of installed packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    # build-essential: Includes C/C++ compilers (gcc, g++), make, etc.
     gdb \
+    # gdb: The GNU Debugger, for debugging C programs.
     libncurses-dev \
+    # libncurses-dev: Development files (headers and libraries) for ncurses UI.
     git \
+    # git: Version control system.
     sudo \
+    # sudo: Allows the created user to run commands with root privileges.
     man-db \
+    # man-db: For accessing manual pages (e.g., `man printf`).
     ca-certificates \
+    # ca-certificates: Provides SSL certificates for secure connections (e.g., for git clone https).
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* # Clean up apt cache to reduce image size.
 
-# Erstelle einen nicht-privilegierten Benutzer
-# Und konfiguriere sudo so, dass dieser Benutzer ohne Passwort sudo verwenden kann
+# Create a non-root user with specified UID/GID and add to sudoers with NOPASSWD
 RUN groupadd --gid ${USER_GID} ${USERNAME} \
-    && useradd --uid ${USER_UID} --gid ${USER_GID} -m ${USERNAME} \
-    # Füge den Benutzer zur sudo-Gruppe hinzu (Debian-Weg)
-    && usermod -aG sudo ${USERNAME} \
-    # Alternativ: Direkter Eintrag in sudoers (benötigt visudo oder sorgfältige Behandlung)
-    # && echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} \
-    # && chmod 0440 /etc/sudoers.d/${USERNAME}
-    # Die usermod-Methode ist oft einfacher, wenn die sudo-Gruppe bereits richtig konfiguriert ist.
-    # Für Debian ist die Gruppe 'sudo' die richtige.
-    && sed -i '/%sudo[[:space:]]/ s/ALL$/NOPASSWD:ALL/' /etc/sudoers
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -m -s /bin/bash ${USERNAME} \
+    # Add user-specific sudo rule for passwordless sudo.
+    # This is generally preferred for dev containers over modifying /etc/sudoers directly.
+    && echo ${USERNAME} ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/${USERNAME} \
+    && chmod 0440 /etc/sudoers.d/${USERNAME}
 
-
-# Setze den erstellten Benutzer als Standardbenutzer
+# Switch to the created non-root user
 USER ${USERNAME}
 
-# Setze das Arbeitsverzeichnis
+# Set the default working directory for subsequent commands and for the container runtime
 WORKDIR /workspace
 
-# Standard-Shell auf Bash setzen (optional, oft schon Standard)
+# Set the default shell for RUN, CMD, ENTRYPOINT instructions.
+# This is often /bin/sh by default, which might be dash on Debian.
+# Explicitly setting to bash ensures bash-specific syntax works if used in RUN commands.
 SHELL ["/bin/bash", "-c"]
