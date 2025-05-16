@@ -75,3 +75,8 @@ This project started as a "Minimal Minimal Viable Product" (MMVP) to get the abs
 **Running the Game:**
 ```bash
 ./vicnake
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
